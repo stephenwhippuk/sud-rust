@@ -1,6 +1,10 @@
 use std::io;
 
 const BLOCKED: i32 = -1;
+const NORTH : usize = 0;
+const EAST : usize = 1;
+const SOUTH : usize = 2;
+const WEST : usize = 3;
 
 struct Item {
     name: &'static str,
@@ -82,6 +86,15 @@ fn print_character(player: &Player) {
     println!("Constitution: {}", player.constitution);
 }
 
+fn move_player(player: &mut Player, location: &Location, direction: usize) -> usize {
+    if location.exits[direction] != BLOCKED {
+        player.location = location.exits[direction] as usize;
+    } else {
+        println!("You can't go that way!");
+    }
+    player.location
+}
+
 fn main() {
     println!("Welcome to Single User Dungeon!");
 
@@ -118,35 +131,19 @@ fn main() {
 
         let command = input.trim().to_lowercase();
         let command: Vec<&str> = command.split_whitespace().collect();
-        let mut current_location :usize = player.location;
+        let current_location = player.location;
         match &command[0] as &str {
             "n" => {
-                if locations[current_location].exits[0] != BLOCKED {
-                    current_location = locations[current_location].exits[0] as usize;
-                } else {
-                    println!("You can't go that way!");
-                }
+                move_player(&mut player, &locations[current_location], NORTH);
             }
             "e" => {
-                if locations[current_location].exits[1] != BLOCKED {
-                    current_location= locations[current_location].exits[1] as usize;
-                } else {
-                    println!("You can't go that way!");
-                }
+                move_player(&mut player, &locations[current_location], EAST);
             }
             "s" => {
-                if locations[current_location].exits[2] != BLOCKED {
-                    current_location = locations[current_location].exits[2] as usize;
-                } else {
-                    println!("You can't go that way!");
-                }
+                move_player(&mut player, &locations[current_location], SOUTH);
             }
             "w" => {
-                if locations[current_location].exits[3] != BLOCKED {
-                    current_location = locations[current_location].exits[3] as usize;
-                } else {
-                    println!("You can't go that way!");
-                }
+                move_player(&mut player, &locations[current_location], WEST);
             }
             "pickup" =>{
                 // accepts a string name for an item and then checks the current location for the item
@@ -234,6 +231,5 @@ fn main() {
                 println!("Invalid input!");
             }
         }
-        player.location = current_location;
     }
 }
